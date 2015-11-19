@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <!-- JS := FONTS, adobe typekit -->
+    <script src="https://use.typekit.net/zde8xlj.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <meta http-equiv="Content-Type" content="text/html" , charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixelgebra</title>
+    <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="/css/blog.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../css/other.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="../../img/favicon.ico" />
+  </head>
+  <body class="custom-background">
+  <!-- HEAD -->
+  <div class="row">
+     <!-- post -->
+     <div class="large-9 push-3 columns">
+     
+<div class="panelIdx">
+<h1><a class="header" href="../../content/posts/2015-05-27-Polym-TypeFamilies.html">Type Families and Associated Types.</a></h1>
+<div class="panel">
+<p class="warn">
+<i class="fa fa-exclamation-triangle fa-1x"></i> This is an unfinished Post <i class="fa fa-exclamation-triangle fa-1x "></i>
+</p>
+<p>Introducing some basic concepts and applications of Type Families and Associated Types.</p>
+<!--more-->
+<h2 id="necessary-pragmas">Necessary Pragmas</h2>
+<h3 id="type-classes-with-multiple-parameters">Type Classes with Multiple Parameters</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE MultiParamTypeClasses #-}</span></code></pre></div>
+<p>The typeclass restrict itself single parameter only. MultiParamTypeClasses can release such limitation.</p>
+<pre><code>class TC a b where
+  foo :: a -&gt; b -&gt; a</code></pre>
+<h3 id="repeated-type-variables-in-type-instances">Repeated Type Variables in Type Instances</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></code></pre></div>
+<p>For any instance of typeclass, haskell assume that each type variable appears at most once in the instance by default. This restriction can be released by simply using <code>FlexibleInstances</code>.</p>
+<pre><code>class TC a b where
+  foo a -&gt; b -&gt; a 
+instance TC a a where
+  foo _ = id</code></pre>
+<p>Notice that there is a quite big chance that <code>FlexibleInstances</code> and <code>FunctionalDependencies</code> are used together.</p>
+<pre><code>class TC a b | a -&gt; b where
+  foo a -&gt; b  
+instance TC (a,b) a where
+  foo (x,y) = x</code></pre>
+<h2 id="associated-type">Associated Type</h2>
+<h3 id="functional-dependency">Functional Dependency</h3>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE FunctionalDependencies #-}</span></code></pre></div>
+<p>Sometimes a multi-parameter typeclass will be over-generalized to use. Especially when there is some relationship between those parameters. With functional dependency one can define some restriction required.</p>
+<p>For example, for typeclass as follows</p>
+<pre><code>class TC a b where
+  foo :: a -&gt; b</code></pre>
+<p>one might want to restrict that <code>b</code> must not be any arbitrary type and shomehow related to <code>a</code>. In that case, one can define with functional dependency:</p>
+<pre><code>class TC a b | a -&gt; b where
+  foo :: a -&gt; b</code></pre>
+<p>Now the second parameter of an instance of <code>TC</code> must contains no variables excepting variables introduced in the first parameter. Both of following instance will be legal.</p>
+<pre><code>instance TC (x, Int) -&gt; x where
+  foo = undefined
+instance TC (x, Int) -&gt; Int where
+  foo = undefined</code></pre>
+<h2 id="type-family">Type Family</h2>
+<p>…</p>
+<hr />
+<p>
+Jaiyalas - 27 May 2015<a href="../../content/posts/2015-05-27-Polym-TypeFamilies.html"><i class="fa fa-link fa-lg fa-fw"></i></a>
+<br />
+<a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/associated%20type.html">associated type</a>, <a href="../../tags/type%20family.html">type family</a>, <a href="../../tags/typeclass.html">typeclass</a>, <a href="../../tags/pragma.html">pragma</a>, <a href="../../tags/functional%20dependency.html">functional dependency</a>
+</p>
+<div id="disqus_thread"></div>
+</div> <!-- end panel-->
+</div> <!-- end panel-->
+
+     </div>
+     <!-- Sidebar -->
+     <div class="large-3 pull-9 columns sidebar">
+        <h1><img src="http://placehold.it/500x500&text=Logo" /></h1>
+        <hr />
+        <ul class="side-nav">
+        <li><a class="tk-metalista-web" href="../../index.html">Home</a></li>
+        <li><a class="tk-metalista-web" href="../../about.html">About</a></li>
+        <li><a class="tk-metalista-web" href="../../tags.html">Tags</a></li>
+        <li><a class="tk-metalista-web" href="../../archive.html">All Posts</a></li>
+        </ul>
+     </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="row">
+     <hr />
+     <div class="large-6 columns">
+     <p>Copyright &copy; 2015 Pixelgebra. All rights reserved.</p>
+     </div>
+     <div class="large-6 columns text-right">
+     <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
+     </div>
+  </footer>
+  <script src="js/vendor/modernizr.js"></script>
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <!-- JS := MathJax -->
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- JS := Disqus -->
+  <script type="text/javascript">
+  (function() {
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//pixelgebra.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+   <script id="dsq-count-scr" src="//pixelgebra.disqus.com/count.js" async></script>
+   <!-- END of definition of js-->
+  </body>
+</html>

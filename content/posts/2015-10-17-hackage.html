@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <!-- JS := FONTS, adobe typekit -->
+    <script src="https://use.typekit.net/zde8xlj.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <meta http-equiv="Content-Type" content="text/html" , charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixelgebra</title>
+    <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="/css/blog.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../css/other.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="../../img/favicon.ico" />
+  </head>
+  <body class="custom-background">
+  <!-- HEAD -->
+  <div class="row">
+     <!-- post -->
+     <div class="large-9 push-3 columns">
+     
+<div class="panelIdx">
+<h1><a class="header" href="../../content/posts/2015-10-17-hackage.html">Define and Use Hackage</a></h1>
+<div class="panel">
+<p>一個 haskell package 的版本號是有明確意義而不是隨便亂取的數字開心就好的。 到底這些數字個別有什麼意思？不同的數字間又代表了什麼差異？接下來我們會簡單介紹一下， 希望對於有心開發 hackage 的人會有幫助。</p>
+<p>此外，我們說一個 <code>instance C T</code> 是一個孤兒 (<em>orphan instance</em>) 是指這個 instance 既不是和 <code>data T</code> 一起被定義在同一個 module 中，也不是和 <code>class C</code> 一起被定義在同一個 module 中。這樣的 instance 會產生一些 importing 上面的問題，也因此這個議題對於開發 hackage 的人來說是值得了解的。</p>
+<!--more-->
+<h2 id="版本號">版本號</h2>
+<p>一個 haskell package 的版本號基本上都具有 <strong>A.B.C</strong> 的形式。其中 <strong>A.B</strong> 被稱為是<strong>主要版本號</strong> (<em>major</em> version number)，而 <strong>C</strong> 則是<strong>次要版本號</strong> (<em>minor</em> version number)。除了 <strong>A.B.C</strong> 以外，目前還允許更多的數字當做是輔助的版本號，例如說 <code>1.2.1.1</code>。 原則上版本號會根據下列 policy 來做變更：</p>
+<p>[如果出現下列變更，增加主要版本號 <strong>A.B</strong>]</p>
+<ul>
+<li>刪除<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> entities<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></li>
+<li>刪除 instances</li>
+<li>更改 entities 的型別 (type)</li>
+<li>更改 datatype 或 classes 的定義更改</li>
+<li>新增 orphan instances (<a href="#orphan">更多細節</a>)</li>
+</ul>
+<p>[如果出現下列變更，<strong>A.B</strong> 不變，但是增加 <strong>C</strong>]</p>
+<ul>
+<li>新增 bindings (即 funcions 或 variables) 或 types 或 classes</li>
+<li>新增 non-orphan instances</li>
+<li>新增 modules (<a href="#addmodule">更多細節</a>)</li>
+</ul>
+<h3 id="addmodule">關於新增 module</h3>
+<p>原則上，新增 module，根據上述的 policy，會造成次要版本號的變更。但是有時候新增 module 也是會造成主要版本號的變更。 例如說，新增的 module 和其他 modules 撞名或是新增了過於一般性的 module (例如說 <code>Data.Set</code>)。原則上後者這種情況應該是需要避免的，而且其實蠻好避免的，因為我們只要設定並且使用自己的 name space 就可以非常有效地避免這個問題了。</p>
+<h2 id="相容性-compatibility">相容性 (compatibility)</h2>
+<p>假設套件的開發者有滿足上述 policy 中的第二點。那麼，使用者在設定 dependency 時允許一定範圍的 <strong>C</strong> 例如 <code>abc &gt;= 2.1.0 &amp;&amp; &lt; 2.2</code>，則可以確保向下相容 (<em>backwards compatibility</em>)。因為更大的 <strong>C</strong> 意指只有新增東西，而不是有變更或減少。</p>
+<p>但是，如果套件中有出現了 orphan instance，那麼在設定 dependency 時必須根據 orphan instance 牽涉到的 datatype and typeclass 來精確地指定 <strong>C</strong>。例如說，假設某套件在 <code>2.1.1</code> 時新增了 <code>data T</code> (或 <code>class C</code>) 且根據 <code>T</code> (或 <code>C</code>) 定義了若干組 orphan instances ，則在使用該套件時必須很精確地去描述那一個特定的次要版本號以維持相容性，例如說 <code>abc &gt;= 2.1.1 &amp;&amp; &lt; 2.1.2</code>。(不過在這個情況下，也許應該說是在強制套件使用者要去注意相容性的問題。)</p>
+<h3 id="關於-import">關於 import</h3>
+<p>不同的 importing 方式會造成 dependency 設定上可以允許的版本號範圍會不太一樣。例如說，給定下面兩種 importing 方式：</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import qualified</span> <span class="dt">ABC.Tree</span> <span class="kw">as</span> <span class="dt">AT</span>
+<span class="kw">import </span><span class="dt">Another.Tree</span> (foo, hoo)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">ABC.Tree</span>
+<span class="kw">import </span><span class="dt">Another.Tree</span> <span class="kw">hiding</span> (yoo, loo)</code></pre></div>
+<p>第一種方法可以有效地避免兩個 modules 之間的內容物撞名問題。所以兩個 modules 不管怎麼新增東西都還是不會有撞名的問題， 因此我們可以設定比較寬鬆的 dependency 如</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">abc     <span class="fu">&gt;=</span> <span class="fl">2.1</span><span class="fu">.</span><span class="dv">2</span> <span class="fu">&amp;&amp;</span> <span class="fu">&lt;</span> <span class="fl">2.2</span>
+another <span class="fu">&gt;=</span> <span class="fl">1.1</span><span class="fu">.</span><span class="dv">1</span> <span class="fu">&amp;&amp;</span> <span class="fu">&lt;</span> <span class="fl">1.2</span></code></pre></div>
+<p>第二種 importing 方法就沒那麼好了。第一個問題是，假設兩個 modules 同時都新增了一個叫做 <code>xoo</code> 的 function， 那麼很容易我們可以發現這會有撞名問題。為了在更新這兩個 packages 時避免這種撞名問題，我們被迫只能設定比較嚴格的 dependency 如</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">abc     <span class="fu">&gt;=</span> <span class="fl">2.1</span><span class="fu">.</span><span class="dv">2</span> <span class="fu">&amp;&amp;</span> <span class="fu">&lt;</span> <span class="fl">2.1</span><span class="fu">.</span><span class="dv">3</span>
+another <span class="fu">&gt;=</span> <span class="fl">1.1</span><span class="fu">.</span><span class="dv">1</span> <span class="fu">&amp;&amp;</span> <span class="fu">&lt;</span> <span class="fl">1.1</span><span class="fu">.</span><span class="dv">2</span></code></pre></div>
+<p>此外，第二種 importing 還有一個問題：因為宣告 <em>DEPRECATED</em> 和實際刪除程式碼都視為是刪除(所以需要改主要版本號)，所以我們沒法從主要版本號上面去區別這兩種情況。 用上面的例子來說明：假設 yoo 被宣告成 <em>DEPRECATED</em>，那麼第二種方法會在 yoo 真的被刪除時出現 importing 錯誤。</p>
+<h2 id="orphan">孤兒 (<em>orphan instance</em>)</h2>
+<p>誠如一開始所介紹的，一個 <code>instance C T</code> 是一個孤兒 (<em>orphan instance</em>) 是指這個 instance 既不是和 <code>data T</code> 一起被定義在同一個 module 中，也不是和 <code>class C</code> 一起被定義在同一個 module 中。</p>
+<p>這會造成什麼問題呢？主要的問題是來自於：「instance 本身是沒有辦法在定義 module 時被暴露 (expose) 的」，實際上這會造成：「我們沒有辦法選擇要或是不要 import 某個或某些 instances」。例如說給定下面兩個 modules</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">TM</span> (<span class="dt">T</span>(<span class="fu">..</span>)) <span class="kw">where</span>
+  <span class="kw">import </span><span class="dt">CM</span>
+  <span class="kw">data</span> <span class="dt">T</span> <span class="fu">=</span> <span class="dt">A</span> <span class="fu">|</span> <span class="dt">B</span>
+  <span class="kw">instance</span> <span class="dt">C</span> <span class="dt">T</span> <span class="kw">where</span>
+    foo <span class="fu">=</span> <span class="dt">A</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">CM</span> (<span class="dt">C</span>(<span class="fu">..</span>)) <span class="kw">where</span>
+  <span class="kw">class</span> <span class="dt">C</span> <span class="kw">where</span>
+<span class="ot">    foo ::</span> <span class="dt">T</span> <span class="ot">-&gt;</span> <span class="dt">T</span>
+  <span class="kw">instance</span> <span class="dt">C</span> <span class="dt">Int</span> <span class="kw">where</span>
+    foo _ <span class="fu">=</span> <span class="dv">0</span></code></pre></div>
+<p>我們可以在 import <code>TM</code> 和 <code>CM</code> 時自由地把 <code>data T</code> 和 <code>class C</code> 給隱藏 (hide) 起來，這種時候那些相關的 instance 就會被連帶隱藏起來。可是對於 orphan instances 例如說</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Another</span> <span class="kw">where</span>
+  <span class="kw">import </span><span class="dt">MC</span>
+  <span class="kw">instance</span> <span class="dt">C</span> <span class="dt">Char</span> <span class="kw">where</span>
+    foo <span class="fu">=</span> id
+  <span class="kw">instance</span> <span class="dt">C</span> <span class="dt">Bool</span> <span class="kw">where</span>
+    foo <span class="fu">=</span> <span class="dt">False</span></code></pre></div>
+<p>就沒這種事情了。一旦任何人 import 了 <code>Another</code>，那兩個 instances 就會被強制性地 import 到那個 module 裡面，而且我們沒有辦法選擇不要也沒有辦法隱藏其中任何一個。</p>
+<p>一個解決孤兒問題的方法是使用 <code>newtype</code>。例如說上面那個 <code>Another</code> 可以被改寫成</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">AnotherSafe</span> (<span class="dt">Wc</span> (<span class="fu">..</span>), <span class="dt">Wb</span> (<span class="fu">..</span>)) <span class="kw">where</span>
+  <span class="kw">import </span><span class="dt">MC</span>
+  <span class="kw">newtype</span> <span class="dt">Wc</span> <span class="fu">=</span> <span class="dt">Wc</span> <span class="dt">Char</span>
+  <span class="kw">newtype</span> <span class="dt">Wb</span> <span class="fu">=</span> <span class="dt">Wb</span> <span class="dt">Bool</span>
+  <span class="kw">instance</span> <span class="dt">C</span> <span class="dt">Wc</span> <span class="kw">where</span>
+    foo <span class="fu">=</span> id
+  <span class="kw">instance</span> <span class="dt">C</span> <span class="dt">Wb</span> <span class="kw">where</span>
+    foo <span class="fu">=</span> <span class="dt">Wb</span> <span class="dt">False</span></code></pre></div>
+<p>這樣就可以強制性地把這兩個孤兒給領養(?)起來。</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>宣告 <a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/pragmas.html"><em>DEPRECATED</em></a> 也是視為一種刪除<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>一個 entity 是指在某個 module 中可以“看到”的 value 或 datatype 或 typeclass。所謂“看到”可能意味著該 entity 被定義在這個 module 或是被 import 進來。<a href="#fnref2">↩</a></p></li>
+</ol>
+</div>
+<hr />
+<p>
+Jaiyalas - 17 Oct 2015<a href="../../content/posts/2015-10-17-hackage.html"><i class="fa fa-link fa-lg fa-fw"></i></a>
+<br />
+<a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/hackage.html">hackage</a>
+</p>
+<div id="disqus_thread"></div>
+</div> <!-- end panel-->
+</div> <!-- end panel-->
+
+     </div>
+     <!-- Sidebar -->
+     <div class="large-3 pull-9 columns sidebar">
+        <h1><img src="http://placehold.it/500x500&text=Logo" /></h1>
+        <hr />
+        <ul class="side-nav">
+        <li><a class="tk-metalista-web" href="../../index.html">Home</a></li>
+        <li><a class="tk-metalista-web" href="../../about.html">About</a></li>
+        <li><a class="tk-metalista-web" href="../../tags.html">Tags</a></li>
+        <li><a class="tk-metalista-web" href="../../archive.html">All Posts</a></li>
+        </ul>
+     </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="row">
+     <hr />
+     <div class="large-6 columns">
+     <p>Copyright &copy; 2015 Pixelgebra. All rights reserved.</p>
+     </div>
+     <div class="large-6 columns text-right">
+     <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
+     </div>
+  </footer>
+  <script src="js/vendor/modernizr.js"></script>
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <!-- JS := MathJax -->
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- JS := Disqus -->
+  <script type="text/javascript">
+  (function() {
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//pixelgebra.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+   <script id="dsq-count-scr" src="//pixelgebra.disqus.com/count.js" async></script>
+   <!-- END of definition of js-->
+  </body>
+</html>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <!-- JS := FONTS, adobe typekit -->
+    <script src="https://use.typekit.net/zde8xlj.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <meta http-equiv="Content-Type" content="text/html" , charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixelgebra</title>
+    <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="/css/blog.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../css/other.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="../../img/favicon.ico" />
+  </head>
+  <body class="custom-background">
+  <!-- HEAD -->
+  <div class="row">
+     <!-- post -->
+     <div class="large-9 push-3 columns">
+     
+<div class="panelIdx">
+<h1><a class="header" href="../../content/posts/2015-05-27-sampling-element.html">How to sample an element from varied structures.</a></h1>
+<div class="panel">
+<p>Assume that function <code>sample</code> can pick a element from a massive structure. To define such <code>sample</code> for different structures, one would naturally try to define a typeclass:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Samplible</span> a <span class="kw">where</span>
+<span class="ot">  sample ::</span> a <span class="ot">-&gt;</span> b</code></pre></div>
+<!--more-->
+<p>This typeclass, however, is too generalized to use. The following instance is illegal since ghc cannot match <code>head :: forall a.[a] -&gt; a</code> with <code>sample :: forall a b. a -&gt; b</code>.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Samplible</span> [a] <span class="kw">where</span>
+  sample <span class="fu">=</span> head <span class="co">-- ERROR</span></code></pre></div>
+<p>Therefore, we can define another typeclass as</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Samplible</span> a b <span class="kw">where</span>
+<span class="ot">  sample ::</span> a <span class="ot">-&gt;</span> b</code></pre></div>
+<p>This one require programmer to explicitly give <code>a</code> and <code>b</code>. But they don’t have to have any relation. So, how nice it would be if we can put some contraints on <code>b</code>?</p>
+<h2 id="functional-dependency">Functional Dependency</h2>
+<p>The very first attempt is that we can just add some <em>functional dependency</em> into that typeclass. Functional dependencies can define relationship between type variables.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Samplible</span> a b <span class="fu">|</span> a <span class="ot">-&gt;</span> b <span class="kw">where</span>
+<span class="ot">  sample ::</span> a <span class="ot">-&gt;</span> b</code></pre></div>
+<p>In this case, we declare that type variable <code>b</code> must be somehow related to <code>a</code>. In other words, <code>b</code> only can be a concrete type, such as <code>Int</code> or <code>Bool</code>, or any type variables occurred in <code>a</code>. For example,</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Samplible</span> [a] a <span class="kw">where</span> <span class="co">-- VALID</span>
+  sample <span class="fu">=</span> head
+<span class="kw">instance</span> <span class="dt">Samplible</span> (a,b) a <span class="kw">where</span> <span class="co">-- VALID</span>
+  sample <span class="fu">=</span> <span class="fu">...</span>
+<span class="kw">instance</span> <span class="dt">Samplible</span> (a,b) b <span class="kw">where</span> <span class="co">-- VALID</span>
+  sample <span class="fu">=</span> <span class="fu">...</span>
+<span class="kw">instance</span> <span class="dt">Samplible</span> (a,b) c <span class="kw">where</span> <span class="co">-- ERROE!!</span>
+  sample <span class="fu">=</span> <span class="fu">...</span>
+<span class="kw">instance</span> <span class="dt">Samplible</span> (a,<span class="dt">Int</span>) <span class="dt">Char</span> <span class="kw">where</span> <span class="co">-- VALID</span>
+  sample <span class="fu">=</span> <span class="fu">...</span></code></pre></div>
+<h2 id="associated-type-synonym">Associated type synonym</h2>
+<p>Haskell also provide another mechanism, <em>type synonym</em>, to manipulate type variables within typeclass. The main idea is to use that type synonym to “capture” (or “present”) the type of element.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Samplible</span> a <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Elem</span><span class="ot"> a ::</span> <span class="fu">*</span>
+<span class="ot">  sample ::</span> a <span class="ot">-&gt;</span> <span class="dt">Ele</span> a
+<span class="kw">instance</span> <span class="dt">Samplible</span> [a] <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Elem</span> [a] <span class="fu">=</span> a
+  sample <span class="fu">=</span> head
+<span class="kw">instance</span> <span class="dt">Samplible</span> <span class="dt">ByteString</span> <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Elem</span> <span class="dt">ByteString</span> <span class="fu">=</span> <span class="dt">Word8</span>
+  sample <span class="fu">=</span> B.head <span class="fu">.</span> B.unpack
+<span class="kw">instance</span> <span class="dt">Samplible</span> <span class="dt">Integer</span> <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Elem</span> <span class="dt">Integer</span> <span class="fu">=</span> <span class="dt">Word8</span>
+  sample <span class="fu">=</span> fromInteger  </code></pre></div>
+<p>A type declared inside a typeclass is called an <em>associated type</em>. In fact, that type is a <em>type family</em>, but this is beyond the scope of this post. If you want to understand more detail about type family, please read <a href=".">this post</a>.</p>
+<h2 id="comparing-with-associated-type-synonym-and-funtional-dependency">Comparing with Associated type synonym and Funtional dependency</h2>
+<p>In fact, both of these ways has same expressivity. However associated type synonym would be a better choice because of functional dependencies may cause human-understanding problems if we get too much dependencies.</p>
+<h2 id="equality-constraints">Equality constraints</h2>
+<p>Using associated type synonym is great, but it also have a shortcut. Comparing with function dependency one can easily find out that we lost a typeclass parameter, <code>b</code>. To expose that parameter, we introduce some equality contraints as follows</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="dt">Elem</span> a <span class="fu">~</span> b) <span class="ot">=&gt;</span> <span class="dt">Samplible</span> a b <span class="kw">where</span>
+  <span class="kw">type</span> <span class="dt">Elem</span><span class="ot"> a ::</span> <span class="fu">*</span>
+<span class="ot">  sample ::</span> a <span class="ot">-&gt;</span> b</code></pre></div>
+<hr />
+<p>
+Jaiyalas - 27 May 2015<a href="../../content/posts/2015-05-27-sampling-element.html"><i class="fa fa-link fa-lg fa-fw"></i></a>
+<br />
+<a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/associated%20type.html">associated type</a>, <a href="../../tags/functional%20dependency.html">functional dependency</a>, <a href="../../tags/typeclass.html">typeclass</a>
+</p>
+<div id="disqus_thread"></div>
+</div> <!-- end panel-->
+</div> <!-- end panel-->
+
+     </div>
+     <!-- Sidebar -->
+     <div class="large-3 pull-9 columns sidebar">
+        <h1><img src="http://placehold.it/500x500&text=Logo" /></h1>
+        <hr />
+        <ul class="side-nav">
+        <li><a class="tk-metalista-web" href="../../index.html">Home</a></li>
+        <li><a class="tk-metalista-web" href="../../about.html">About</a></li>
+        <li><a class="tk-metalista-web" href="../../tags.html">Tags</a></li>
+        <li><a class="tk-metalista-web" href="../../archive.html">All Posts</a></li>
+        </ul>
+     </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="row">
+     <hr />
+     <div class="large-6 columns">
+     <p>Copyright &copy; 2015 Pixelgebra. All rights reserved.</p>
+     </div>
+     <div class="large-6 columns text-right">
+     <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
+     </div>
+  </footer>
+  <script src="js/vendor/modernizr.js"></script>
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <!-- JS := MathJax -->
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- JS := Disqus -->
+  <script type="text/javascript">
+  (function() {
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//pixelgebra.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+   <script id="dsq-count-scr" src="//pixelgebra.disqus.com/count.js" async></script>
+   <!-- END of definition of js-->
+  </body>
+</html>

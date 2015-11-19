@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <!-- JS := FONTS, adobe typekit -->
+    <script src="https://use.typekit.net/zde8xlj.js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    <meta http-equiv="Content-Type" content="text/html" , charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixelgebra</title>
+    <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="/css/blog.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../../css/other.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="../../img/favicon.ico" />
+  </head>
+  <body class="custom-background">
+  <!-- HEAD -->
+  <div class="row">
+     <!-- post -->
+     <div class="large-9 push-3 columns">
+     
+<div class="panelIdx">
+<h1><a class="header" href="../../content/posts/2015-05-29-old-time.html">For old time's sake.</a></h1>
+<div class="panel">
+<p>Today we will have a short overview of old data-/time-related packages listed as follows:</p>
+<ul>
+<li><a href="https://hackage.haskell.org/package/old-time">old-time</a></li>
+<li><a href="http://hackage.haskell.org/package/time-compat">time-compat</a></li>
+<li><a href="https://hackage.haskell.org/package/old-locale">old-locale</a></li>
+<li><a href="http://hackage.haskell.org/package/time-locale-compat">time-locale-compat</a> <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></li>
+</ul>
+<p>Those modules are very easily to use but have some shortcomings. The <strong>old-time</strong>(<code>System.Time</code>) has poor supporting on locale and formating and lack functions to manipulate times. And the <code>TimeDiff</code> is not very sueful. The <strong>old-locale</strong>(<code>System.Locale</code>), however, is not very out-dated.</p>
+<!--more-->
+<h3 id="old-locale">old-locale</h3>
+<p>The <strong>old-locale</strong> package provides module <code>System.Locale</code> allowing to adapt to local conventions. There is just one single structure defined.</p>
+<h4 id="the-timelocale">The <code>TimeLocale</code></h4>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">TimeLocale</span> <span class="fu">=</span> <span class="dt">TimeLocale</span> {
+<span class="ot">        wDays  ::</span> [(<span class="dt">String</span>, <span class="dt">String</span>)],
+<span class="ot">        months ::</span> [(<span class="dt">String</span>, <span class="dt">String</span>)],
+<span class="ot">        intervals ::</span> [(<span class="dt">String</span>, <span class="dt">String</span>)],
+<span class="ot">        amPm   ::</span> (<span class="dt">String</span>, <span class="dt">String</span>),
+        dateTimeFmt, dateFmt,
+        timeFmt,<span class="ot"> time12Fmt ::</span> <span class="dt">String</span>
+        } <span class="fu">...</span></code></pre></div>
+<p>The difference bewteen <code>Data.Time.Format.TimeLocale</code> and <code>System.Locale.TimeLocale</code> is very ignorable. The most significant one is that the has <code>knownTimeZones :: [TimeZone]</code> instead of <code>intervals :: [(String, String)]</code>.</p>
+<h4 id="extra">Extra</h4>
+<p>The package <a href="http://hackage.haskell.org/package/time-locale-compat">time-locale-compat</a> is a interface for importing different versions of <code>TimeLocale</code>. If the version of <strong>time</strong> is greater then <strong>1.5.0</strong>, it will import <code>Data.Time.Format</code> and import <code>System.Locale</code> for otherwise.</p>
+<h3 id="old-time">old-time</h3>
+<p>The <strong>old-time</strong> package provide the <code>System.Time</code> module that contains three distinct structures for representing times:</p>
+<h4 id="the-clocktime">The <code>ClockTime</code></h4>
+<p>The first one is used to represent raw system time in two integers.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">ClockTime</span> <span class="fu">=</span> <span class="dt">TOD</span> <span class="dt">Integer</span> <span class="dt">Integer</span></code></pre></div>
+<p>One can extract system clock time by using</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">getClockTime ::</span> <span class="dt">IO</span> <span class="dt">ClockTime</span></code></pre></div>
+<p>Besides <code>ClockTime</code> there is also a structure for recording differenct between two clock times</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">TimeDiff</span>
+ <span class="fu">=</span> <span class="dt">TimeDiff</span>	{
+<span class="ot">       tdYear    ::</span> <span class="dt">Int</span>
+     ,<span class="ot"> tdMonth   ::</span> <span class="dt">Int</span>
+     ,<span class="ot"> tdDay     ::</span> <span class="dt">Int</span> 
+     , <span class="fu">...</span>
+ }</code></pre></div>
+<h4 id="the-calendartime">The <code>CalendarTime</code></h4>
+<p>The second structure in this module is <code>CalendarTime</code> which will store time in a human-friendly structure:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">CalendarTime</span>
+ <span class="fu">=</span> <span class="dt">CalendarTime</span>  {
+<span class="ot">       ctYear    ::</span> <span class="dt">Int</span>
+     ,<span class="ot"> ctMonth   ::</span> <span class="dt">Month</span>
+     ,<span class="ot"> ctDay     ::</span> <span class="dt">Int</span> 
+     , <span class="fu">...</span>
+ }</code></pre></div>
+<p>Also, this module defines several converting function between <code>CalendarTime</code>, <code>ClockTime</code> and <code>String</code>. Read <a href="https://hackage.haskell.org/package/old-time">old-time</a> for more details.</p>
+<h4 id="extra-1">Extra</h4>
+<p>There is a tiny package, <a href="http://hackage.haskell.org/package/time-compat">time-compat</a>, providing single typeclass <code>ToUTCTime</code> that define a function <code>toUTCTime</code> to convert an old-time structure to a <code>Data.Time.UTCTime</code>.</p>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>It’s an simple example for <code>{-# LANGUAGE CPP #-}</code>.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+<hr />
+<p>
+Jaiyalas - 29 May 2015<a href="../../content/posts/2015-05-29-old-time.html"><i class="fa fa-link fa-lg fa-fw"></i></a>
+<br />
+<a href="../../tags/haskell.html">haskell</a>, <a href="../../tags/packages.html">packages</a>, <a href="../../tags/time.html">time</a>
+</p>
+<div id="disqus_thread"></div>
+</div> <!-- end panel-->
+</div> <!-- end panel-->
+
+     </div>
+     <!-- Sidebar -->
+     <div class="large-3 pull-9 columns sidebar">
+        <h1><img src="http://placehold.it/500x500&text=Logo" /></h1>
+        <hr />
+        <ul class="side-nav">
+        <li><a class="tk-metalista-web" href="../../index.html">Home</a></li>
+        <li><a class="tk-metalista-web" href="../../about.html">About</a></li>
+        <li><a class="tk-metalista-web" href="../../tags.html">Tags</a></li>
+        <li><a class="tk-metalista-web" href="../../archive.html">All Posts</a></li>
+        </ul>
+     </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="row">
+     <hr />
+     <div class="large-6 columns">
+     <p>Copyright &copy; 2015 Pixelgebra. All rights reserved.</p>
+     </div>
+     <div class="large-6 columns text-right">
+     <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
+     </div>
+  </footer>
+  <script src="js/vendor/modernizr.js"></script>
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <!-- JS := MathJax -->
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- JS := Disqus -->
+  <script type="text/javascript">
+  (function() {
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//pixelgebra.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+   <script id="dsq-count-scr" src="//pixelgebra.disqus.com/count.js" async></script>
+   <!-- END of definition of js-->
+  </body>
+</html>
