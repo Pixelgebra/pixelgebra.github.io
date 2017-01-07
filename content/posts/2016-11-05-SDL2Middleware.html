@@ -17,17 +17,20 @@
      <div class="large-9 push-3 columns">
      
 <div class="panelIdx">
-<h1><a class="header" href="../../content/posts/2015-11-22-Pixelgebra.html">Pixel + algebra = Pixelgebra</a></h1>
+<h1><a class="header" href="../../content/posts/2016-11-05-SDL2Middleware.html">SDL2 Middile in Haskell</a></h1>
 <div class="panel">
-<p>We make <em>game</em>. We play with <em>functional programming</em>. We are <em>Pixelgebra</em>.</p>
-<!--more-->
-<p>Nowadays functional language is already quite practical. It has always been some rumors about how fast functional developments could be. Is that true? if so, can that bring us any advantage for game developing? Pixelgebra aims to find out an answer for that question!</p>
-<p>Pixelgebra is (so far) a team of two. We play with Haskell. We love games. So, can we put everything we love together? Can we show that functional programming is useful for game development? Could functional programming be a good choice of producing commercial games? To find out the possibility, Pixelgebra is trying to use functional language to achieve some techniques of rapidly game developing. It’s also the launch center for building and engaging our own rocket science!</p>
+<p>We chose <a href="https://www.libsdl.org/">SDL2</a> to develop our game engine after reviewing several graphics libraries. It is a low-level multimedia library via OpenGL and Direct3D in C. It has a few Haskell bindings. The one we use is maintained by Pétursson and Charles, the <a href="https://hackage.haskell.org/package/sdl2">sdl</a>.</p>
+<p>The excellent SDL2 tutorial, <a href="http://lazyfoo.net/tutorials/SDL/">Lazy Foo</a>, in C/C++ provides many examples. These are translated into many languages, as well as Haskell version. For example,</p>
+<ul>
+<li><a href="https://github.com/haskell-game/sdl2">haskell-game/sdl2</a>. The examples, here, are more like the 1 to 1 translation of Lazy Foo’s version.</li>
+<li><a href="https://github.com/palf/haskell-sdl2-examples">palf/haskell-sdl2-examples</a>. Here is defined share library to write examples which based on Lazy Foo’s version.</li>
+</ul>
+<p>For practice, we also try to translate Lazy Foo’s example 1 to 1. After writing 15+ examples, I realized that I am writing in Haskell and I needed to focus on describing data types and functions. I needed to develop a middleware API such as Palf’s share library. Therefore I started to write it again and develop the Pixelgebra middleware. In the following article, I’ll start Pixelgebra middleware development log.</p>
 <hr />
 <p>
-yyc - 22 Nov 2015
+cct - 05 Nov 2016
 <br />
-<a href="../../tags/misc.html">misc</a>
+<a href="../../tags/sdl2.html">sdl2</a>
 </p>
 <div class="panelDisqus">
 <div id="disqus_thread"></div>

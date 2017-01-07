@@ -5,9 +5,9 @@
     <meta http-equiv="Content-Type" content="text/html" , charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pixelgebra</title>
-    <link rel="stylesheet" type="text/css" href="./css/foundation.css" />
-    <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
-    <link rel="stylesheet" type="text/css" href="./css/other.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/other.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   </head>
   <body class="custom-background">
@@ -15,15 +15,11 @@
   <div class="row">
      <!-- post -->
      <div class="large-9 push-3 columns">
-     <div class="panelIdx">
-<h1><a class="header" href="./index.html">Pixelgebra</a></h1>
-
+     
+<div class="panelIdx">
+<h1><a class="header" href="../../content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 component</a></h1>
 <div class="panel">
-<h2><a href="./content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 component</a></h2>
-<p>By cct - 05 Dec 2016</p>
-<hr />
-   
-     <p>As we familiar that the allocated resources must be freed once it is unnecessary. In SDL2, creating and destroying resources are managed by ourselves. In other words, we have to write two fragments of code, one for creating, one for destroying. If resources exist, it’ll require lots of effort to handle their dependence and sequence.</p>
+<p>As we familiar that the allocated resources must be freed once it is unnecessary. In SDL2, creating and destroying resources are managed by ourselves. In other words, we have to write two fragments of code, one for creating, one for destroying. If resources exist, it’ll require lots of effort to handle their dependence and sequence.</p>
 <p>The <code>(:~&gt;)</code>, as follows, is designed for solving this issue:</p>
 <pre><code>(:~&gt;) :: (MonadIO m) =&gt; (a -&gt; m b, b -&gt; m ()) -&gt; a -&gt; (b -&gt; m c) -&gt; m ()
 (:~&gt;) (x,y) i f = do
@@ -79,49 +75,30 @@ sdlInitVideo = (const $ SDL.initialize [SDL.InitVideo], const SDL.quit)</code></
             $ \s -&gt; do
                 ...</code></pre>
 <p>Finally, we can draw and update anything which we really want to show on the surface. Then we don’t need to worry about freeing resources. The <code>(:~&gt;)</code> should do the trick and make the whole program simple.</p>
-   
-   </div> <!-- end panel-->
-
-<div class="panel">
-<h2><a href="./content/posts/2016-11-05-SDL2Middleware.html">SDL2 Middile in Haskell</a></h2>
-<p>By cct - 05 Nov 2016</p>
 <hr />
-   
-     <p>We chose <a href="https://www.libsdl.org/">SDL2</a> to develop our game engine after reviewing several graphics libraries. It is a low-level multimedia library via OpenGL and Direct3D in C. It has a few Haskell bindings. The one we use is maintained by Pétursson and Charles, the <a href="https://hackage.haskell.org/package/sdl2">sdl</a>.</p>
-<p>The excellent SDL2 tutorial, <a href="http://lazyfoo.net/tutorials/SDL/">Lazy Foo</a>, in C/C++ provides many examples. These are translated into many languages, as well as Haskell version. For example,</p>
-<ul>
-<li><a href="https://github.com/haskell-game/sdl2">haskell-game/sdl2</a>. The examples, here, are more like the 1 to 1 translation of Lazy Foo’s version.</li>
-<li><a href="https://github.com/palf/haskell-sdl2-examples">palf/haskell-sdl2-examples</a>. Here is defined share library to write examples which based on Lazy Foo’s version.</li>
-</ul>
-<p>For practice, we also try to translate Lazy Foo’s example 1 to 1. After writing 15+ examples, I realized that I am writing in Haskell and I needed to focus on describing data types and functions. I needed to develop a middleware API such as Palf’s share library. Therefore I started to write it again and develop the Pixelgebra middleware. In the following article, I’ll start Pixelgebra middleware development log.</p>
-   
-   </div> <!-- end panel-->
-
-<div class="panel">
-<h2><a href="./content/posts/2015-11-22-Pixelgebra.html">Pixel + algebra = Pixelgebra</a></h2>
-<p>By yyc - 22 Nov 2015</p>
-<hr />
-   
-     <p>We make <em>game</em>. We play with <em>functional programming</em>. We are <em>Pixelgebra</em>.</p>
-
-     <p><a href="./content/posts/2015-11-22-Pixelgebra.html" class="readmore">... read more</a></p>
-   
-   </div> <!-- end panel-->
-
+<p>
+cct - 05 Dec 2016
+<br />
+<a href="../../tags/sdl2.html">sdl2</a>
+</p>
+<div class="panelDisqus">
+<div id="disqus_thread"></div>
+</div>
+</div> <!-- end panel-->
 </div> <!-- end panel-->
 
      </div>
      <!-- Sidebar -->
      <div class="large-3 pull-9 columns sidebar">
-        <h1 class="text-center"><a href="./index.html"><img src="./img/Logo.png" /></a></h1>
+        <h1 class="text-center"><a href="../../index.html"><img src="../../img/Logo.png" /></a></h1>
         <hr />
         <ul class="side-nav">
         <li>
-           <a href="./about.html"><img src="./img/01.png" /> About</a></li>
+           <a href="../../about.html"><img src="../../img/01.png" /> About</a></li>
         <li>
-           <a href="./tags.html"><img src="./img/02.png" /> Tags</a></li>
+           <a href="../../tags.html"><img src="../../img/02.png" /> Tags</a></li>
         <li>
-           <a href="./archive.html"><img src="./img/03.png" /> All Posts</a></li>
+           <a href="../../archive.html"><img src="../../img/03.png" /> All Posts</a></li>
         </ul>
      </div>
   </div>
