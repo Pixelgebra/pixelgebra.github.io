@@ -17,25 +17,26 @@
      <div class="large-9 push-3 columns">
      
 <div class="panelIdx">
-<h1><a class="header" href="../../content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 component</a></h1>
+<h1><a class="header" href="../../content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 Component</a></h1>
 <div class="panel">
 <p>As we familiar that the allocated resources must be freed once it is unnecessary. In SDL2, creating and destroying resources are managed by ourselves. In other words, we have to write two fragments of code, one for creating, one for destroying. If resources exist, it’ll require lots of effort to handle their dependence and sequence.</p>
+<!--more-->
 <p>The <code>(:~&gt;)</code>, as follows, is designed for solving this issue:</p>
-<pre><code>(:~&gt;) :: (MonadIO m) =&gt; (a -&gt; m b, b -&gt; m ()) -&gt; a -&gt; (b -&gt; m c) -&gt; m ()
-(:~&gt;) (x,y) i f = do
-   c &lt;- x i
-      f c
-      y c</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(:~&gt;) ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b, b <span class="ot">-&gt;</span> m ()) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> m c) <span class="ot">-&gt;</span> m ()
+(<span class="fu">:~&gt;</span>) (x,y) i f <span class="fu">=</span> <span class="kw">do</span>
+  c <span class="ot">&lt;-</span> x i
+  f c
+  y c</code></pre></div>
 <p>There are 3 parameters in this function. The first one <code>(a -&gt; m b, b -&gt; m ())</code> is to pair the creating and destroying resource functions. <code>a -&gt; m b</code> in the pair will take the second parameter, an <code>a</code>, as an input parameter to create <code>m b</code> subsystem/container in <code>MonadIO</code>. The third parameter <code>b -&gt; m c</code> is the operation that any things we want to do in <code>b</code>. For example, drawing a circle in <code>b</code>, handling key events in <code>b</code> etc. At the end, we will take <code>b -&gt; m ()</code> (first parameter of the pair) to destroy <code>b</code>.</p>
-<h2 id="the-usage-of">The usage of <code>(:~&gt;)</code></h2>
+<h2 id="the-usage-of">The Usage of <code>(:~&gt;)</code></h2>
 <p>Next, I am going to define several pairs of the creating and destroying resource and show how it works with <code>(:~&gt;)</code>.</p>
-<h3 id="init-and-quit">init and quit</h3>
+<h3 id="init-and-quit">Init and Quit</h3>
 <p><code>SDL.initialize</code> and <code>SDL.quit</code> are common functions that we used a lot in SDL2 library. To make it simply use. We paired them together as follows:</p>
-<pre><code>sdlInit :: (MonadIO m) =&gt; ([InitFlag] -&gt; m (), () -&gt; m ())
-sdlInit = (fs -&gt; SDL.initialize fs, const SDL.quit)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">sdlInit ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> ([<span class="dt">InitFlag</span>] <span class="ot">-&gt;</span> m (), () <span class="ot">-&gt;</span> m ())
+sdlInit <span class="fu">=</span> (fs <span class="ot">-&gt;</span> SDL.initialize fs, const SDL.quit)</code></pre></div>
 <p>Since the <code>InitVideo</code> flag is quite often used, we defined <code>sdlInitVideo</code>:</p>
-<pre><code>sdlInitVideo :: (MonadIO m) =&gt; (() -&gt; m (), () -&gt; m ())
-sdlInitVideo = (const $ SDL.initialize [SDL.InitVideo], const SDL.quit)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">sdlInitVideo ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> (() <span class="ot">-&gt;</span> m (), () <span class="ot">-&gt;</span> m ())
+sdlInitVideo <span class="fu">=</span> (const <span class="fu">$</span> SDL.initialize [<span class="dt">SDL.InitVideo</span>], const SDL.quit)</code></pre></div>
 <h3 id="create-and-destory-window">create and destory window</h3>
 <p><code>SDL.createWindow</code> and <code>SDL.destoryWindow</code> can be a pair as well. That means, we like to use <code>SDL.createWindow</code> as the first parameter of <code>(:~&gt;)</code>. However, <code>SDL.createWindow</code> itself has two parameters, yet the first parameter of <code>(:~&gt;)</code> has type of <code>a -&gt; m b</code> which is a function with single input.</p>
 <p>There are two simple solutions:</p>
@@ -46,13 +47,13 @@ sdlInitVideo = (const $ SDL.initialize [SDL.InitVideo], const SDL.quit)</code></
 <li>The <code>SDL.defaultWindow</code>, however, is the second parameter of <code>SDL.createWindow</code> so we apply <code>flip</code> to swap their positions.</li>
 </ul></li>
 </ul>
-<pre><code>    defaultWindow :: (MonadIO m) =&gt; (T.Text -&gt; m SDL.Window, SDL.Window -&gt; m ())
-    defaultWindow = (flip SDL.createWindow SDL.defaultWindow, SDL.destroyWindow)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">defaultWindow ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> (<span class="dt">T.Text</span> <span class="ot">-&gt;</span> m <span class="dt">SDL.Window</span>, <span class="dt">SDL.Window</span> <span class="ot">-&gt;</span> m ())
+defaultWindow <span class="fu">=</span> (flip SDL.createWindow SDL.defaultWindow, SDL.destroyWindow)</code></pre></div>
 <ul>
 <li>using uncurreied</li>
 </ul>
-<pre><code>    window :: (MonadIO m) =&gt; ((T.Text, SDL.WindowConfig) -&gt; m SDL.Window, SDL.Window -&gt; m ())
-    window = (uncurry SDL.createWindow, SDL.destroyWindow)</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">window ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> ((<span class="dt">T.Text</span>, <span class="dt">SDL.WindowConfig</span>) <span class="ot">-&gt;</span> m <span class="dt">SDL.Window</span>, <span class="dt">SDL.Window</span> <span class="ot">-&gt;</span> m ())
+window <span class="fu">=</span> (uncurry SDL.createWindow, SDL.destroyWindow)</code></pre></div>
 <h3 id="more">more</h3>
 <p>The other example such as, <code>SDL.getWindowSurface</code>, <code>SDL.loadBMP</code> or <code>optBmpSurface</code> can be also paired with <code>SDL.freeSurface</code>. see <a href="https://github.com/rueshyna/pixel-pen/blob/master/src/PixelPen/Container.hs">here</a> for their defitions.</p>
 <h2 id="examples">Examples</h2>
@@ -62,22 +63,22 @@ sdlInitVideo = (const $ SDL.initialize [SDL.InitVideo], const SDL.quit)</code></
 <li><a href="https://github.com/rueshyna/sdl2-examples/blob/master/src/Lesson02.hs">Lession2</a></li>
 </ul>
 <p>At the beginning of both examples, we initialize SDL as follow:</p>
-<pre><code>(:~&gt;) sdlInitVideo () f</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="fu">:~&gt;</span>) sdlInitVideo () f</code></pre></div>
 <p>where <code>f</code> is the computation following SDL’s initialization. Obvioursly the very first thing of <code>f</code> should be window initialization:</p>
-<pre><code>(:~&gt;) sdlInitVideo ()
-    $ \() -&gt; (:~&gt;) defaultWindow &quot;Lesson01&quot; g</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="fu">:~&gt;</span>) sdlInitVideo ()
+  <span class="fu">$</span> \() <span class="ot">-&gt;</span> (<span class="fu">:~&gt;</span>) defaultWindow <span class="st">&quot;Lesson01&quot;</span> g</code></pre></div>
 <p>As same as <code>f</code>, so as <code>g</code>. Let’s see the type of <code>g</code>:</p>
-<pre><code>g :: (MonadIO m) =&gt; SDL.Window -&gt; m ()</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">g ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> <span class="dt">SDL.Window</span> <span class="ot">-&gt;</span> m ()</code></pre></div>
 <p>which means we can get created windows in <code>g</code>’s body. The surface creation looks like:</p>
-<pre><code>(:~&gt;) sdlInitVideo ()
-   $ \() -&gt; (:~&gt;) defaultWindow &quot;Lesson01&quot;
-       $ \w -&gt; (:~&gt;) surface w
-            $ \s -&gt; do
-                ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(<span class="fu">:~&gt;</span>) sdlInitVideo ()
+   <span class="fu">$</span> \() <span class="ot">-&gt;</span> (<span class="fu">:~&gt;</span>) defaultWindow <span class="st">&quot;Lesson01&quot;</span>
+      <span class="fu">$</span> \w <span class="ot">-&gt;</span> (<span class="fu">:~&gt;</span>) surface w
+         <span class="fu">$</span> \s <span class="ot">-&gt;</span> <span class="kw">do</span>
+            <span class="fu">...</span></code></pre></div>
 <p>Finally, we can draw and update anything which we really want to show on the surface. Then we don’t need to worry about freeing resources. The <code>(:~&gt;)</code> should do the trick and make the whole program simple.</p>
 <hr />
 <p>
-cct - 05 Dec 2016
+CCT - 05 Dec 2016
 <br />
 <a href="../../tags/sdl2.html">sdl2</a>
 </p>
@@ -94,11 +95,11 @@ cct - 05 Dec 2016
         <hr />
         <ul class="side-nav">
         <li>
-           <a href="../../about.html"><img src="../../img/01.png" /> About</a></li>
+           <a href="../../about.html"> About</a></li>
         <li>
-           <a href="../../tags.html"><img src="../../img/02.png" /> Tags</a></li>
+           <a href="../../tags.html"> Tags</a></li>
         <li>
-           <a href="../../archive.html"><img src="../../img/03.png" /> All Posts</a></li>
+           <a href="../../archive.html"> All Posts</a></li>
         </ul>
      </div>
   </div>
