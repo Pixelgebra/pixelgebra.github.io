@@ -8,18 +8,29 @@
     <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
     <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
     <link rel="stylesheet" type="text/css" href="../../css/other.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   </head>
   <body class="custom-background">
   <!-- HEAD -->
   <div class="row">
      <!-- post -->
      <div class="large-9 push-3 columns">
-     
-<div class="panelIdx">
-<h1><a class="header" href="../../content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 Component</a></h1>
-<div class="panel">
-<p>As we familiar that the allocated resources must be freed once it is unnecessary. In SDL2, creating and destroying resources are managed by ourselves. In other words, we have to write two fragments of code, one for creating, one for destroying. If resources exist, it’ll require lots of effort to handle their dependence and sequence.</p>
+     <div class="panelIdx">
+  <h1><a class="header" href="../../content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 Component</a></h1>
+    <section class="post">
+      <header class="post-header">
+        
+        <div id="TOC">
+          <p class="tocheader">Table of Contents</p>
+          <ul>
+<li><a href="#the-usage-of">The Usage of <code>(:~&gt;)</code></a></li>
+<li><a href="#examples">Examples</a></li>
+</ul>
+        </div>
+        
+      </header>
+      <hr>
+      <div class="post-description">
+        <p>As we familiar that the allocated resources must be freed once it is unnecessary. In SDL2, creating and destroying resources are managed by ourselves. In other words, we have to write two fragments of code, one for creating, one for destroying. If resources exist, it’ll require lots of effort to handle their dependence and sequence.</p>
 <!--more-->
 <p>The <code>(:~&gt;)</code>, as follows, is designed for solving this issue:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(:~&gt;) ::</span> (<span class="dt">MonadIO</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b, b <span class="ot">-&gt;</span> m ()) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> m c) <span class="ot">-&gt;</span> m ()
@@ -76,17 +87,19 @@ window <span class="fu">=</span> (uncurry SDL.createWindow, SDL.destroyWindow)</
          <span class="fu">$</span> \s <span class="ot">-&gt;</span> <span class="kw">do</span>
             <span class="fu">...</span></code></pre></div>
 <p>Finally, we can draw and update anything which we really want to show on the surface. Then we don’t need to worry about freeing resources. The <code>(:~&gt;)</code> should do the trick and make the whole program simple.</p>
-<hr />
-<p>
-CCT - 05 Dec 2016
-<br />
-<a href="../../tags/sdl2.html">sdl2</a>
-</p>
-<div class="panelDisqus">
-<div id="disqus_thread"></div>
+      </div>
+      <div class="post-footnote">
+        <div class="post-meta">
+          <span class="post-author">By CCT</span> Posted on 05 Dec 2016
+          <a href="../../content/posts/2016-12-05-ManageSDL2Component.html"><i class="fa fa-link fa-lg fa-fw"></i></a><br />
+          Last modified on 26 Mar 2017 (07:48)
+        </div>
+          <div>Tags: <a href="../../tags/sdl2.html">sdl2</a></div>
+      </div>
+      <div class="panelDisqus">
+      <div id="disqus_thread"></div></div>
+    </section>
 </div>
-</div> <!-- end panel-->
-</div> <!-- end panel-->
 
      </div>
      <!-- Sidebar -->
@@ -114,10 +127,6 @@ CCT - 05 Dec 2016
      <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
      </div>
   </footer>
-  <script src="js/vendor/modernizr.js"></script>
-  <script src="js/vendor/jquery.js"></script>
-  <script src="js/foundation.min.js"></script>
-  <!-- JS := MathJax -->
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   <!-- JS := Disqus -->
   <script type="text/javascript">

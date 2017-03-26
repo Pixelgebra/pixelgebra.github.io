@@ -8,18 +8,26 @@
     <link rel="stylesheet" type="text/css" href="../../css/foundation.css" />
     <link rel="stylesheet" type="text/css" href="../../css/syntax.css" />
     <link rel="stylesheet" type="text/css" href="../../css/other.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   </head>
   <body class="custom-background">
   <!-- HEAD -->
   <div class="row">
      <!-- post -->
      <div class="large-9 push-3 columns">
-     
-<div class="panelIdx">
-<h1><a class="header" href="../../content/posts/2016-11-05-SDL2Middleware.html">SDL2 Middle in Haskell</a></h1>
-<div class="panel">
-<p>We chose <a href="https://www.libsdl.org/">SDL2</a> to develop our game engine after reviewing several graphics libraries. It is a low-level multimedia library via OpenGL and Direct3D in C. It has a few Haskell bindings. The one we use is maintained by Pétursson and Charles, the <a href="https://hackage.haskell.org/package/sdl2">sdl</a>.</p>
+     <div class="panelIdx">
+  <h1><a class="header" href="../../content/posts/2016-11-05-SDL2Middleware.html">SDL2 Middle in Haskell</a></h1>
+    <section class="post">
+      <header class="post-header">
+        
+        <div id="TOC">
+          <p class="tocheader">Table of Contents</p>
+          
+        </div>
+        
+      </header>
+      <hr>
+      <div class="post-description">
+        <p>We chose <a href="https://www.libsdl.org/">SDL2</a> to develop our game engine after reviewing several graphics libraries. It is a low-level multimedia library via OpenGL and Direct3D in C. It has a few Haskell bindings. The one we use is maintained by Pétursson and Charles, the <a href="https://hackage.haskell.org/package/sdl2">sdl</a>.</p>
 <!--more-->
 <p>The excellent SDL2 tutorial, <a href="http://lazyfoo.net/tutorials/SDL/">Lazy Foo</a>, in C/C++ provides many examples. These are translated into many languages, as well as Haskell version. For example,</p>
 <ul>
@@ -27,17 +35,19 @@
 <li><a href="https://github.com/palf/haskell-sdl2-examples">palf/haskell-sdl2-examples</a>. Here is defined share library to write examples which based on Lazy Foo’s version.</li>
 </ul>
 <p>For practice, we also try to translate Lazy Foo’s example 1 to 1. After writing 15+ examples, I realized that I am writing in Haskell and I needed to focus on describing data types and functions. I needed to develop a middleware API such as Palf’s share library. Therefore I started to write it again and develop the Pixelgebra middleware. In the following article, I’ll start Pixelgebra middleware development log.</p>
-<hr />
-<p>
-CCT - 05 Nov 2016
-<br />
-<a href="../../tags/sdl2.html">sdl2</a>
-</p>
-<div class="panelDisqus">
-<div id="disqus_thread"></div>
+      </div>
+      <div class="post-footnote">
+        <div class="post-meta">
+          <span class="post-author">By CCT</span> Posted on 05 Nov 2016
+          <a href="../../content/posts/2016-11-05-SDL2Middleware.html"><i class="fa fa-link fa-lg fa-fw"></i></a><br />
+          Last modified on 22 Mar 2017 (16:07)
+        </div>
+          <div>Tags: <a href="../../tags/sdl2.html">sdl2</a></div>
+      </div>
+      <div class="panelDisqus">
+      <div id="disqus_thread"></div></div>
+    </section>
 </div>
-</div> <!-- end panel-->
-</div> <!-- end panel-->
 
      </div>
      <!-- Sidebar -->
@@ -65,10 +75,6 @@ CCT - 05 Nov 2016
      <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
      </div>
   </footer>
-  <script src="js/vendor/modernizr.js"></script>
-  <script src="js/vendor/jquery.js"></script>
-  <script src="js/foundation.min.js"></script>
-  <!-- JS := MathJax -->
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   <!-- JS := Disqus -->
   <script type="text/javascript">
