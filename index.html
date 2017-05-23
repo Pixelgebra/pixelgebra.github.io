@@ -6,28 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="We make game. We play with functional programming. We are Pixelgebra which is Pixel + Algebra." />
     <title>Pixelgebra</title>
-    <link rel="stylesheet" type="text/css" href="./css/foundation.css" />
-    <link rel="stylesheet" type="text/css" href="./css/syntax.css" />
-    <link rel="stylesheet" type="text/css" href="./css/other.css" />
+    <link rel="stylesheet" type="text/css" href="./css/foundation.min.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+    <link rel="stylesheet" type="text/css" href="./css/post.css" />
   </head>
-  <body class="custom-background">
-  <!-- HEAD -->
-  <div class="row">
-     <!-- post -->
-     <div class="large-9 push-3 columns">
-     <div class="panelIdx">
-  <h1><a class="header" href="./index.html">Pixelgebra</a></h1>
+
+  <body class="background">
+
+    <!-- HEADER -->
+    <div class="row hide-for-large">
+      <div class="sidebar logo">
+        <a href="./index.html"><img src="./img/logo.s.png" /></a>
+      </div>
+      <div class="toggle-sidebar">
+      <button type="menu-icon" data-toggle="offCanvas">
+        <img src="./img/01.png" />
+      </button>
+      </div>
+      <div class="off-canvas position-left" id="offCanvas" data-off-canvas>
+        <!-- Close button -->
+        <button class="close-button" aria-label="Close menu" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+
+        <!-- Menu -->
+        <ul class="side-nav">
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./tags.html">Tags</a></li>
+          <li><a href="./archive.html">All Posts</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HEAD -->
+    <div class="row full-height">
+      <!-- post -->
+      <div class="large-9 large-push-3 columns panel">
+        <div class="panelIdx">
   <div class="posts">
     
     <section class="post">
-      <header class="post-header">
-        <h2 class="post-title"><a href="./content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 Component</a></h2>
-        <div class="post-meta">
-          <span class="post-author">By CCT</span> Posted on 05 Dec 2016
-              <a href="./content/posts/2016-12-05-ManageSDL2Component.html"><i class="fa fa-link fa-lg fa-fw"></i></a><br />
-            Last modified on 26 Mar 2017 (07:48)
+      <div class="post-header">
+        <h1 class="post-title"><a href="./content/posts/2016-12-05-ManageSDL2Component.html">Manage SDL2 Component</a></h1>
+        <div class="post-meta align-center">
+          05 Dec 2016 BY CCT
         </div>
-      </header>
+      </div>
       <hr>
       <div class="post-description">
         
@@ -42,14 +66,12 @@
     </section>
     
     <section class="post">
-      <header class="post-header">
-        <h2 class="post-title"><a href="./content/posts/2016-11-05-SDL2Middleware.html">SDL2 Middle in Haskell</a></h2>
-        <div class="post-meta">
-          <span class="post-author">By CCT</span> Posted on 05 Nov 2016
-              <a href="./content/posts/2016-11-05-SDL2Middleware.html"><i class="fa fa-link fa-lg fa-fw"></i></a><br />
-            Last modified on 22 Mar 2017 (16:07)
+      <div class="post-header">
+        <h1 class="post-title"><a href="./content/posts/2016-11-05-SDL2Middleware.html">SDL2 Middle in Haskell</a></h1>
+        <div class="post-meta align-center">
+          05 Nov 2016 BY CCT
         </div>
-      </header>
+      </div>
       <hr>
       <div class="post-description">
         
@@ -64,14 +86,12 @@
     </section>
     
     <section class="post">
-      <header class="post-header">
-        <h2 class="post-title"><a href="./content/posts/2015-11-22-Pixelgebra.html">Pixel + algebra = Pixelgebra</a></h2>
-        <div class="post-meta">
-          <span class="post-author">By YYC</span> Posted on 22 Nov 2015
-              <a href="./content/posts/2015-11-22-Pixelgebra.html"><i class="fa fa-link fa-lg fa-fw"></i></a><br />
-            Last modified on 26 Mar 2017 (08:31)
+      <div class="post-header">
+        <h1 class="post-title"><a href="./content/posts/2015-11-22-Pixelgebra.html">Pixel + algebra = Pixelgebra</a></h1>
+        <div class="post-meta align-center">
+          22 Nov 2015 BY YYC
         </div>
-      </header>
+      </div>
       <hr>
       <div class="post-description">
         
@@ -88,45 +108,46 @@
   </div>
 </div> <!-- end panel-->
 
-     </div>
-     <!-- Sidebar -->
-     <div class="large-3 pull-9 columns sidebar">
-        <h1 class="text-center"><a href="./index.html"><img src="./img/Logo.png" /></a></h1>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="large-3 large-pull-9 columns sidebar show-for-large">
+        <a href="./index.html"><img src="./img/logo.s.png" /></a>
         <hr />
         <ul class="side-nav">
-        <li>
-           <a href="./about.html"> About</a></li>
-        <li>
-           <a href="./tags.html"> Tags</a></li>
-        <li>
-           <a href="./archive.html"> All Posts</a></li>
+          <li><a href="./about.html">About</a></li>
+          <li><a href="./tags.html">Tags</a></li>
+          <li><a href="./archive.html">All Posts</a></li>
         </ul>
-     </div>
-  </div>
+      </div>
+    </div>
 
-  <!-- FOOTER -->
-  <footer class="row">
-     <hr />
-     <div class="large-6 columns">
-     <p>Copyright &copy; 2015 Pixelgebra. All rights reserved.</p>
-     </div>
-     <div class="large-6 columns text-right">
-     <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
-     </div>
-  </footer>
-  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  <!-- JS := Disqus -->
-  <script type="text/javascript">
-  (function() {
+    <!-- FOOTER -->
+    <div class="row footer">
+      <div class="large-6 columns">
+        <p>Copyright &copy; 2015 Pixelgebra. All rights reserved.</p>
+      </div>
+      <div class="large-6 columns text-right">
+        <p>Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.</p>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="./js/jquery.js"></script>
+    <script type="text/javascript" src="./js/foundation.min.js"></script>
+    <script type="text/javascript" src="./js/app.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- JS := Disqus -->
+<script type="text/javascript">
+(function() {
   var dsq = document.createElement('script');
   dsq.type = 'text/javascript';
   dsq.async = true;
   dsq.src = '//pixelgebra.disqus.com/embed.js';
   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-  })();
-  </script>
-  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
-   <script id="dsq-count-scr" src="//pixelgebra.disqus.com/count.js" async></script>
-   <!-- END of definition of js-->
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+<script id="dsq-count-scr" src="//pixelgebra.disqus.com/count.js" async></script>
+<!-- END of definition of js-->
   </body>
 </html>
