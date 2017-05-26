@@ -10,3 +10,11 @@ $(document).foundation();
 
 ga('create', 'UA-99849613-1', 'auto');
 ga('send', 'pageview');
+
+<!-- JS := Disqus-->
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://http-pixelgebra-org.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
