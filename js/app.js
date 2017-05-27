@@ -1,7 +1,4 @@
-<!-- JS := foundation -->
-$(document).foundation();
 
-<!-- JS := GoogleAnalyticsObject -->
 var getUrlParameter = function getUrlParameter(sParam) {
   var sPageURL = decodeURIComponent(window.location.search.substring(1)),
     sURLVariables = sPageURL.split('&'),
@@ -17,6 +14,17 @@ var getUrlParameter = function getUrlParameter(sParam) {
   }
 };
 
+$.fn.appendAttr = function(attrName, suffix) {
+    this.attr(attrName, function(i, val) {
+        return val + suffix;
+    });
+    return this;
+};
+
+<!-- JS := foundation -->
+$(document).foundation();
+
+<!-- JS := GoogleAnalyticsObject -->
 var st = getUrlParameter('st');
 if ( st === undefined || st !== '1') {
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -27,11 +35,12 @@ if ( st === undefined || st !== '1') {
   ga('create', 'UA-99849613-2', 'auto');
   ga('send', 'pageview');
 } else {
+  $("a[href^='\.']").appendAttr("href","?st=1");
   console.log("st mode on");
 };
 
 <!-- JS := Disqus-->
-(function() { // DON'T EDIT BELOW THIS LINE
+(function() {
 var d = document, s = d.createElement('script');
 s.src = 'https://http-pixelgebra-org.disqus.com/embed.js';
 s.setAttribute('data-timestamp', +new Date());
